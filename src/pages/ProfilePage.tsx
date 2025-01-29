@@ -5,6 +5,7 @@ import { logout } from "../store/slices/authSlice";
 import { useNavigate } from "react-router";
 import network_service from "../utils/network_service";
 import { USER_PACKAGE_URL } from "../constants/api_constants";
+import { Role } from "../types/user";
 
 type PackageStatus = "published" | "rejected" | "pending" | "starred";
 
@@ -82,11 +83,11 @@ const ProfilePage: React.FC = () => {
               <button className="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
                 Change Password
               </button>
-              <button 
+              {user?.role===Role.Admin && <button 
                 className="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
                 onClick={()=>{navigate('/review')}}>
                 Review Packages
-              </button>
+              </button>}
               <button
                 className="w-full px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-500 hover:text-white rounded-md"
                 onClick={handleLogout}

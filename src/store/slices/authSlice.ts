@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User } from '../../types/user';
+import { Role, User } from '../../types/user';
 import { LOGIN_URL, SIGNUP_URL } from '../../constants/api_constants';
 import network_service, { NetworkException } from '../../utils/network_service';
 import { jwtDecode } from 'jwt-decode';
@@ -21,6 +21,7 @@ const getInitialUser = (): User | null => {
       displayName: decodedToken.username,
       fullName: decodedToken.username,
       avatarUrl: `https://robohash.org/${decodedToken.username}?set=set3`,
+      role:decodedToken.role
     } as User; 
   }
   return null;
@@ -34,16 +35,16 @@ const initialState: AuthState = {
 
 
 
-interface DecodedToken {
+export interface DecodedToken {
   id: string;
   email: string;
   username: string;
+  role:Role
 }
 
 export const login = createAsyncThunk(
   'auth/login',
   async ({ username, password }: { username: string; password: string }, { rejectWithValue }) => {
-    // Replace with actual API call
     const payload ={
       username : username,
       password :password
@@ -76,6 +77,7 @@ export const login = createAsyncThunk(
       displayName: decodedToken.username,
       fullName: decodedToken.username,
       avatarUrl: `https://robohash.org/${decodedToken.username}?set=set3`,
+      role:decodedToken.role
     } as User;
   }
 );
@@ -116,7 +118,8 @@ export const signup = createAsyncThunk(
       email:decodedToken.email,
       displayName: decodedToken.username,
       fullName: name,
-      avatarUrl: 'https://avatar.iran.liara.run/public',
+      avatarUrl: `https://robohash.org/${decodedToken.username}?set=set3`,
+      role:decodedToken.role
     } as User;
   }
 );

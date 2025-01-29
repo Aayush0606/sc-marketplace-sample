@@ -90,13 +90,15 @@ class NetworkService {
     });
   }
 
-  async put<T, D>({
+  async put<T>({
     url,
     body,
+    headers = {},
     timeOutDuration = 1000,
   }: {
     url: string;
-    body: D;
+    body: any;
+    headers?: Record<string, string>;
     timeOutDuration?: number;
   }): Promise<NetworkResponse<T>> {
     return this.handleRequest<T>({
@@ -104,6 +106,7 @@ class NetworkService {
         url,
         method: 'PUT',
         data: body,
+        headers,
         timeout: timeOutDuration,
       },
     });
