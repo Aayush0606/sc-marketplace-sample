@@ -5,6 +5,9 @@ import { logout } from "../store/slices/authSlice";
 import { useNavigate } from "react-router";
 import network_service from "../utils/network_service";
 import { USER_PACKAGE_URL } from "../constants/api_constants";
+import { Tooltip } from 'react-tooltip'
+import { Pencil } from "lucide-react";
+import EditMoral from "../components/EditMoral";
 
 type PackageStatus = "published" | "rejected" | "pending" | "starred";
 
@@ -17,6 +20,17 @@ const ProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const fetchIdRef = useRef<number>(0);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAcceptCase, setIsAcceptCase] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -146,9 +160,19 @@ const ProfilePage: React.FC = () => {
                       key={`${pkg.id}-${index}`}
                       className="p-6 bg-gradient-to-br from-gray-100 dark:from-gray-700 to-gray-200 dark:to-gray-600 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                     >
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
-                        {pkg.packageName}
-                      </h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                          {pkg.packageName}
+                        </h3>
+                        <a
+                          className="ml-2 cursor-pointer dark:text-white text-black border-2 border:red-200 px-[12px] py-[4px] rounded-full inline-flex items-center justify-center"
+                          data-tooltip-id="my-tooltip"
+                          data-tooltip-content="Hello world!"
+                        >
+                          i
+                        </a>
+                        <Tooltip id="my-tooltip" />
+                      </div>
                       <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
                         {pkg.description}
                       </p>
@@ -161,6 +185,9 @@ const ProfilePage: React.FC = () => {
                             day: "numeric",
                           })}
                         </span>
+                        <button onClick={openModal}>
+                          <Pencil color="black"/>
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -170,6 +197,13 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+      <EditMoral
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={"Edit"}
+        // caseType={"Edit"}
+        // onSubmit={isAcceptCase ? handleAcceptSubmit : handleRejectSubmit}
+      />
     </div>
   );
 };

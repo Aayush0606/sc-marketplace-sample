@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import network_service from "../utils/network_service";
 import { PACKAGE_URL, USER_PACKAGE_URL } from "../constants/api_constants";
 import Modal, { setAppElement } from "react-modal"
+import { Check, Code, X } from "lucide-react";
 
 
 Modal.setAppElement("#root");
@@ -234,7 +235,7 @@ const ReviewPackages: React.FC = () => {
                                         <img
                                             src={pkg.thumbnail ? pkg.thumbnail : "https://salescode.ai/wp-content/uploads/2023/04/Square-Teal-.png"}
                                             alt={pkg.packageName}
-                                            className="w-3/5 h-48 object-cover rounded-lg mb-6 md:mb-0  md:h-48 md:ml-6 md:order-2"
+                                            className="md:w-3/5 h-48 object-cover rounded-lg mb-6 md:mb-0 md:ml-6 md:order-2"
                                         />
                                         <div className="flex flex-col flex-1 md:order-1">
                                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
@@ -243,10 +244,10 @@ const ReviewPackages: React.FC = () => {
                                             <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
                                                 {pkg.description}
                                             </p>
-                                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
+                                            <p className="mt-2 text-xs text-gray-600 dark:text-gray-300 line-clamp-1">
                                                 By : {pkg.user.username}
                                             </p>
-                                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
+                                            <p className="mt-2 text-xs text-gray-600 dark:text-gray-400 line-clamp-1">
                                                 Email : {pkg.user.email}
                                             </p>
                                             <div className="flex justify-between items-center mt-4">
@@ -261,8 +262,11 @@ const ReviewPackages: React.FC = () => {
                                             </div>
                                             <div className="flex flex-row pt-4">
                                                 {/* Accept */}
-                                                <button className="bg-green-500 px-5 py-2 mr-5 rounded-md hover:bg-green-300" onClick={openAccept}>
-                                                    Accept
+                                                <button className="bg-green-500 px-3 py-1 mr-5 rounded-md hover:bg-green-300" onClick={openAccept}>
+                                                    <div className="flex">
+                                                    <Check /> Accept
+                                                    </div>
+                                                
                                                 </button>
                                                 <Modal
                                                     isOpen={isAccepted}
@@ -272,7 +276,7 @@ const ReviewPackages: React.FC = () => {
                                                     overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
                                                 >
                                                     <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                                                        Accept
+                                                    Accept
                                                     </h2>
                                                     {/* Buttons */}
                                                     <div className="flex justify-end">
@@ -293,16 +297,20 @@ const ReviewPackages: React.FC = () => {
                                                 </Modal>
                                                 {/* Reject */}
                                                 <button 
-                                                    className="bg-red-500 px-5 py-2 mr-5 rounded-md hover:bg-red-300"
+                                                    className="bg-red-500 px-3 py-2 mr-5 rounded-md hover:bg-red-300"
                                                     onClick={openModal}
                                                 >
-                                                    Reject
+                                                    <div className="flex">
+                                                    <X /> Reject
+                                                    </div>
                                                 </button>
                                                 <button
                                                     type="submit"
                                                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
                                                 >
-                                                    Review code
+                                                    <div className="flex">
+                                                    <Code className="mr-1"/>Review code
+                                                    </div>
                                                 </button>
                                                 <Modal
                                                     isOpen={isModalOpen}
