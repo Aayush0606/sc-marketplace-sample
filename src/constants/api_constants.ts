@@ -1,5 +1,5 @@
-// export const BASE_URL ="http://localhost:8000";
-export const BASE_URL ="https://salescode-marketplace.salescode.ai";
+export const BASE_URL ="http://localhost:8000";
+// export const BASE_URL ="https://salescode-marketplace.salescode.ai";
 
 export const SIGNUP_URL = '/user/register';
 export const LOGIN_URL = '/user/login';

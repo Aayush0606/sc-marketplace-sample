@@ -7,8 +7,7 @@ import { DecodedToken } from "../store/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { Role } from "../types/user";
 import { CheckCircle, XCircle, FileText } from "lucide-react";
-import { url } from "inspector";
-import axios from "axios";
+import ReviewModal from "../components/PackageActionModal";
 
 Modal.setAppElement("#root");
 
@@ -18,7 +17,6 @@ const ReviewPackages: React.FC = () => {
     const [packages, setPackages] = useState<any[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState<"accept" | "reject" | null>(null);
-    const [reason, setReason] = useState<string | null>(null);
     const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
 
     const navigate = useNavigate();
@@ -33,8 +31,8 @@ const ReviewPackages: React.FC = () => {
             const token = localStorage.getItem("token") ?? "";
             const decodedToken = jwtDecode<DecodedToken>(token);
             const response = await network_service.get<any>({
-                // url: `${PACKAGE_URL}?status=PENDING`,
-                url: `${PACKAGE_URL}`,
+                url: `${PACKAGE_URL}?status=PENDING`,
+                // url: `${PACKAGE_URL}`,
                 timeOutDuration: 10000,
                 headers: {
                     userid: `${decodedToken.id}`,
@@ -62,7 +60,7 @@ const ReviewPackages: React.FC = () => {
         fetchPackages();
     }, [fetchPackages, navigate]);
 
-    const openModal = (type: "accept" | "reject",packageName: string) => {
+    const openModal = (type: "accept" | "reject", packageName: string) => {
         setModalType(type);
         setIsModalOpen(true);
         setSelectedPackage(packageName);
@@ -74,28 +72,8 @@ const ReviewPackages: React.FC = () => {
         setSelectedPackage(null);
     };
 
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-        const token = localStorage.getItem('token');
-        const status = modalType === 'accept' ? 'PUBLISHED' : 'REJECTED';
-        try {
-            const res = await network_service.put<any>({
-                url: `${CHANGE_PACKAGE_STATUS}/${selectedPackage}?status=${status}`,
-                body: { "remark": reason },
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-        } catch (error) {
-            console.log(error);
-        } finally {
-            closeModal();
-        }
-        navigate('/review');
-    };
-
-    const handleReviewClick=async()=>{
-        navigate('/review-code');
+    const handleReviewClick = async (packageName: string) => {
+        navigate(`/review-code?package=${packageName}`);
     }
 
     return (
@@ -133,7 +111,7 @@ const ReviewPackages: React.FC = () => {
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                                         {pkg.packageName}
                                     </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1 line-clamp-1">
                                         {pkg.description}
                                     </p>
                                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Uploaded by: {pkg.user.username}</p>
@@ -148,20 +126,20 @@ const ReviewPackages: React.FC = () => {
 
                                     <div className="flex w-full gap-2 mt-4">
                                         <button
-                                            onClick={() => openModal("accept",pkg.packageName)}
+                                            onClick={() => openModal("accept", pkg.packageName)}
                                             className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                                         >
                                             <CheckCircle size={16} /> Accept
                                         </button>
                                         <button
-                                            onClick={() => openModal("reject",pkg.packageName)}
+                                            onClick={() => openModal("reject", pkg.packageName)}
                                             className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                                         >
                                             <XCircle size={16} /> Reject
                                         </button>
                                     </div>
                                     <button
-                                    onClick={handleReviewClick}
+                                        onClick={() => handleReviewClick(pkg.packageName)}
                                         className="flex items-center gap-2 mt-2 w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                                     >
                                         <FileText size={16} /> Review Code
@@ -172,48 +150,13 @@ const ReviewPackages: React.FC = () => {
                     )}
                 </div>
 
-                <Modal
+                <ReviewModal
                     isOpen={isModalOpen}
-                    onRequestClose={closeModal}
-                    className="w-full max-w-lg mx-auto bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-lg shadow-xl p-6 sm:p-8"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4"
-                >
-                    <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200 capitalize">
-                        {modalType === "accept" ? "Accept Package" : "Reject Package"}
-                    </h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                        {modalType === "accept"
-                            ? "You are about to accept this package. Please confirm your action."
-                            : "Provide a reason for rejecting this package."}
-                    </p>
-                    <form onSubmit={handleSubmit}>
-                        {modalType === "reject" && (
-                            <textarea
-                                placeholder="Reason for rejection"
-                                className="w-full px-4 py-2 mb-4 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 resize-none"
-                                rows={4}
-                                required
-                                value={reason ?? ""}
-                                onChange={(e) => setReason(e.target.value)}
-                            ></textarea>
-                        )}
-                        <div className="flex flex-col sm:flex-row justify-between gap-2">
-                            <button
-                                type="button"
-                                onClick={closeModal}
-                                className="flex-1 px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </form>
-                </Modal>
+                    onClose={closeModal}
+                    modalType={modalType}
+                    selectedPackage={selectedPackage}
+                    fetchPackages={fetchPackages}
+                />
             </div>
         </div>
     );
