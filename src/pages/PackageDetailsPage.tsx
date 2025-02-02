@@ -26,7 +26,7 @@ export const PackageDetailsPage: React.FC = () => {
       }
 
       try {
-        const response = await network_service.get<any>({url:'/package/all'});
+        const response = await network_service.get<any>({ url: '/package/all' });
         const foundPackage = response.data.packages.find((p: Package) => p._id === id);
         setPackageDetails(foundPackage || null);
       } catch (error) {
@@ -133,18 +133,24 @@ export const PackageDetailsPage: React.FC = () => {
                   Resource Links
                 </h3>
                 <ul className="space-y-3">
-                  {packageDetails.documentUrls.map((url) => (
-                    <li key={url}>
-                      <a
-                        href={`https://${url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-medium hover:underline hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-300"
-                      >
-                        <span>{url}</span>
-                      </a>
-                    </li>
-                  ))}
+                  {packageDetails.documentUrls.map((url) => {
+                    const normalizedUrl = url.startsWith("http") ? url : `https://${url}`;
+                    const displayUrl = new URL(normalizedUrl).hostname + new URL(normalizedUrl).pathname;
+
+                    return (
+                      <li key={normalizedUrl}>
+                        <a
+                          href={normalizedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-medium hover:underline hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-300"
+                        >
+                          <span>{displayUrl}</span>
+                        </a>
+                      </li>
+                    );
+                  })}
+
                 </ul>
               </div>
             )}

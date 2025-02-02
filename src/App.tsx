@@ -13,6 +13,8 @@ import { DocsPage } from './pages/DocsPage';
 import AboutUs from './pages/AboutUs';
 import ReviewPackages from './pages/ReviewPackages';
 import ZipViewer from './pages/CodeViewer';
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App() {
   const theme = useSelector((state: RootState) => state.theme);
@@ -23,6 +25,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+    <ToastContainer autoClose={3000} position="top-right" theme={theme} />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<LandingPage />} />

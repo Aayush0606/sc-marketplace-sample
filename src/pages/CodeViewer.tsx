@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import JSZip from "jszip";
-import axios from "axios";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import MarkdownComponent from "../components/MarkdownComponent";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -50,11 +49,12 @@ const ZipViewer: React.FC = () => {
     setFileContent("");
 
     try {
-      const response = await network_service.get<any>({url:`/package/${packageName}`, 
+      const response = await network_service.get<any>({
+        url: `/package/${packageName}`,
         headers: {
-          consumerKey: "e755c4b448d84c72837850c4bedf3619",
-        
-      }});
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       const packageBuffer = response.data.packageBuffer;
 
@@ -172,6 +172,14 @@ const ZipViewer: React.FC = () => {
       );
     });
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-blue-500"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
