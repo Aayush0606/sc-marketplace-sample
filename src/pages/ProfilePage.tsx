@@ -5,9 +5,10 @@ import { logout } from "../store/slices/authSlice";
 import { useNavigate } from "react-router";
 import network_service from "../utils/network_service";
 import { USER_PACKAGE_URL } from "../constants/api_constants";
-import { Tooltip } from 'react-tooltip'
-import { Pencil } from "lucide-react";
+import { Tooltip } from "react-tooltip";
+import { Pencil, Info } from "lucide-react";
 import EditMoral from "../components/EditMoral";
+import { Package } from "../types/package";
 
 type PackageStatus = "published" | "rejected" | "pending" | "starred";
 
@@ -20,16 +21,19 @@ const ProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const fetchIdRef = useRef<number>(0);
+  const theme = useSelector((state: RootState) => state.theme);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAcceptCase, setIsAcceptCase] = useState(false);
+  const [editingPackage, setEditingPackage] = useState<Package | null>(null);
 
-  const openModal = () => {
+  const openModal = (packageName: Package) => {
     setIsModalOpen(true);
+    setEditingPackage(packageName);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setEditingPackage(null);
   };
 
   const handleLogout = () => {
@@ -72,6 +76,20 @@ const ProfilePage: React.FC = () => {
     fetchPackages(activeTab);
   }, [activeTab, fetchPackages]);
 
+  const statusTooltipStyles: Record<PackageStatus, string> = {
+    published: "text-green-500",
+    rejected: "text-red-500",
+    pending: "text-yellow-500",
+    starred: "text-blue-500",
+  };
+
+  const statusTooltipMessages: Record<PackageStatus, string> = {
+    published: "Package approved by admin",
+    rejected: "Package rejected by admin: {remark}",
+    pending: "Package waiting for approval by admin",
+    starred: "Package starred by user",
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -96,11 +114,16 @@ const ProfilePage: React.FC = () => {
               <button className="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
                 Change Password
               </button>
-              <button 
-                className="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
-                onClick={()=>{navigate('/review')}}>
-                Review Packages
-              </button>
+              {user?.role === "admin" && (
+                <button
+                  className="w-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
+                  onClick={() => {
+                    navigate("/review");
+                  }}
+                >
+                  Review Packages
+                </button>
+              )}
               <button
                 className="w-full px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-500 hover:text-white rounded-md"
                 onClick={handleLogout}
@@ -158,20 +181,37 @@ const ProfilePage: React.FC = () => {
                   {packages.map((pkg, index) => (
                     <div
                       key={`${pkg.id}-${index}`}
-                      className="p-6 bg-gradient-to-br from-gray-100 dark:from-gray-700 to-gray-200 dark:to-gray-600 rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                      className="p-6 bg-gradient-to-br from-gray-100 dark:from-gray-700 to-gray-200 dark:to-gray-600 rounded-lg shadow-xl hover:shadow-2xl transform transition-all duration-300"
                     >
                       <div className="flex items-center justify-between">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
                           {pkg.packageName}
                         </h3>
-                        <a
-                          className="ml-2 cursor-pointer dark:text-white text-black border-2 border:red-200 px-[12px] py-[4px] rounded-full inline-flex items-center justify-center"
-                          data-tooltip-id="my-tooltip"
-                          data-tooltip-content="Hello world!"
+                        <div className="mt-2 flex items-center gap-2">
+                          <Info
+                            size={18}
+                            className={`${statusTooltipStyles[activeTab]} cursor-pointer`}
+                            data-tooltip-id={`tooltip-${pkg.id}`}
+                          />
+                          <Tooltip
+                            id={`tooltip-${pkg.id}`}
+                            place="top"
+                            clickable
+                            variant={theme==="dark"?"dark":"light"}
+                            opacity={1}
+                            className="rounded-lg shadow-lg p-2 text-black dark:text-white max-w-xs whitespace-normal"
+                          >
+                            {activeTab === "rejected" && pkg.remark
+                              ? `Package rejected by admin : ${pkg.remark}`
+                              : statusTooltipMessages[activeTab]}
+                          </Tooltip>
+                        </div>
+                        <button
+                          className="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600"
+                          onClick={() => openModal(pkg)}
                         >
-                          i
-                        </a>
-                        <Tooltip id="my-tooltip" />
+                          <Pencil size={18} className="text-gray-700 dark:text-white" />
+                        </button>
                       </div>
                       <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
                         {pkg.description}
@@ -185,9 +225,6 @@ const ProfilePage: React.FC = () => {
                             day: "numeric",
                           })}
                         </span>
-                        <button onClick={openModal}>
-                          <Pencil color="black"/>
-                        </button>
                       </div>
                     </div>
                   ))}
@@ -200,9 +237,7 @@ const ProfilePage: React.FC = () => {
       <EditMoral
         isOpen={isModalOpen}
         onClose={closeModal}
-        title={"Edit"}
-        // caseType={"Edit"}
-        // onSubmit={isAcceptCase ? handleAcceptSubmit : handleRejectSubmit}
+        packageDetails={editingPackage}
       />
     </div>
   );
