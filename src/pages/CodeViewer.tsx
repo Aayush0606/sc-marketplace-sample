@@ -4,11 +4,14 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import MarkdownComponent from "../components/MarkdownComponent";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import ReviewModal from "../components/PackageActionModal";
 import network_service from "../utils/network_service";
+import { Role } from "../types/user";
+import { DecodedToken } from "../store/slices/authSlice";
+import { jwtDecode } from "jwt-decode";
 
 const isFile = (path: string) => path.includes(".") && !path.endsWith("/");
 
@@ -25,8 +28,19 @@ const ZipViewer: React.FC = () => {
   const [searchParams] = useSearchParams();
   const theme = useSelector((state: RootState) => state.theme);
   const packageName = searchParams.get("package");
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token===null || token===''){
+      navigate("/marketplace");
+      return;
+    }
+    const decodedToken = jwtDecode<DecodedToken>(token!);
+    if (!decodedToken.id || decodedToken.role !== Role.Admin){
+      navigate("/marketplace");
+      return;
+    }
     fetchAndProcessBuffer();
   }, []);
 

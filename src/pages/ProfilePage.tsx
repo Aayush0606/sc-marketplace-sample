@@ -73,6 +73,11 @@ const ProfilePage: React.FC = () => {
   );
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token === null || token === '') {
+      navigate("/marketplace");
+      return;
+    }
     fetchPackages(activeTab);
   }, [activeTab, fetchPackages]);
 
@@ -145,11 +150,10 @@ const ProfilePage: React.FC = () => {
                     <button
                       key={status}
                       onClick={() => setActiveTab(status)}
-                      className={`transition-all duration-300 py-3 px-6 font-medium text-sm capitalize ${
-                        activeTab === status
+                      className={`transition-all duration-300 py-3 px-6 font-medium text-sm capitalize ${activeTab === status
                           ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg shadow"
                           : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`}
+                        }`}
                     >
                       {status}
                     </button>
@@ -183,35 +187,37 @@ const ProfilePage: React.FC = () => {
                       key={`${pkg.id}-${index}`}
                       className="p-6 bg-gradient-to-br from-gray-100 dark:from-gray-700 to-gray-200 dark:to-gray-600 rounded-lg shadow-xl hover:shadow-2xl transform transition-all duration-300"
                     >
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                      <div className="flex items-center justify-between gap-4 w-full">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate min-w-0 flex-1">
                           {pkg.packageName}
                         </h3>
-                        <div className="mt-2 flex items-center gap-2">
-                          <Info
-                            size={18}
-                            className={`${statusTooltipStyles[activeTab]} cursor-pointer`}
-                            data-tooltip-id={`tooltip-${pkg.id}`}
-                          />
-                          <Tooltip
-                            id={`tooltip-${pkg.id}`}
-                            place="top"
-                            clickable
-                            variant={theme==="dark"?"dark":"light"}
-                            opacity={1}
-                            className="rounded-lg shadow-lg p-2 text-black dark:text-white max-w-xs whitespace-normal"
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <div className="relative">
+                            <Info
+                              size={18}
+                              className={`${statusTooltipStyles[activeTab]} cursor-pointer hover:opacity-80 transition-opacity`}
+                              data-tooltip-id={`tooltip-${pkg.id}`}
+                            />
+                            <Tooltip
+                              id={`tooltip-${pkg.id}`}
+                              place="top"
+                              clickable
+                              variant={theme === "dark" ? "dark" : "light"}
+                              opacity={1}
+                              className="rounded-lg shadow-lg p-2 text-black dark:text-white max-w-xs whitespace-normal"
+                            >
+                              {activeTab === "rejected" && pkg.remark
+                                ? `Package rejected by admin : ${pkg.remark}`
+                                : statusTooltipMessages[activeTab]}
+                            </Tooltip>
+                          </div>
+                          <button
+                            className="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+                            onClick={() => openModal(pkg)}
                           >
-                            {activeTab === "rejected" && pkg.remark
-                              ? `Package rejected by admin : ${pkg.remark}`
-                              : statusTooltipMessages[activeTab]}
-                          </Tooltip>
+                            <Pencil size={18} className="text-gray-700 dark:text-white" />
+                          </button>
                         </div>
-                        <button
-                          className="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600"
-                          onClick={() => openModal(pkg)}
-                        >
-                          <Pencil size={18} className="text-gray-700 dark:text-white" />
-                        </button>
                       </div>
                       <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
                         {pkg.description}

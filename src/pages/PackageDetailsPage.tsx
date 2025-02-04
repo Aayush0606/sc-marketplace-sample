@@ -97,16 +97,11 @@ export const PackageDetailsPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <Tabs tabsData={tabsData} />
           </div>
-
-          {/* Sidebar */}
           <div className="space-y-8">
-            {/* Author info */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                 About the Author
@@ -126,8 +121,7 @@ export const PackageDetailsPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Document URLs */}
-            {packageDetails.documentUrls && (
+            {packageDetails.documentUrls  && packageDetails.documentUrls.length>0 && (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                   Resource Links
@@ -145,7 +139,7 @@ export const PackageDetailsPage: React.FC = () => {
                           rel="noopener noreferrer"
                           className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 font-medium hover:underline hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors duration-300"
                         >
-                          <span>{displayUrl}</span>
+                          <span>{displayUrl.endsWith('/')?displayUrl.slice(0,-1):displayUrl}</span>
                         </a>
                       </li>
                     );
@@ -155,7 +149,6 @@ export const PackageDetailsPage: React.FC = () => {
               </div>
             )}
 
-            {/* Related packages */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                 You May Also Like

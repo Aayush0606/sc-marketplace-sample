@@ -1,4 +1,3 @@
-// ReviewModal.tsx
 import React from 'react';
 import Modal from "react-modal";
 import network_service from "../utils/network_service";
@@ -10,12 +9,12 @@ interface ReviewModalProps {
     onClose: () => void;
     modalType: "accept" | "reject" | null;
     selectedPackage: string | null;
-    fetchPackages:Function | null;
+    fetchPackages: Function | null;
 }
 
-const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, modalType, selectedPackage,fetchPackages }) => {
-    const [reason, setReason] = React.useState<string | null>(null);
+const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, modalType, selectedPackage, fetchPackages }) => {
     const navigate = useNavigate();
+    let reason: string | null = null;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,7 +28,6 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, modalType, s
                     Authorization: `Bearer ${token}`,
                 }
             });
-            setReason(null);
         } catch (error) {
             console.log(error);
             onClose();
@@ -37,9 +35,9 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, modalType, s
         } finally {
             onClose();
         }
-        if(fetchPackages){
+        if (fetchPackages) {
             fetchPackages();
-        }else{
+        } else {
             navigate('/review');
         }
     };
@@ -66,8 +64,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, onClose, modalType, s
                         className="w-full px-4 py-2 mb-4 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 resize-none"
                         rows={4}
                         required
-                        value={reason ?? ""}
-                        onChange={(e) => setReason(e.target.value)}
+                        onChange={(e) => reason = e.target.value}
                     ></textarea>
                 )}
                 <div className="flex flex-col sm:flex-row justify-between gap-2">

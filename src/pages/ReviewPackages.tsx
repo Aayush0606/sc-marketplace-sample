@@ -54,9 +54,15 @@ const ReviewPackages: React.FC = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) navigate("/marketplace");
+        if (token === null || token === '') {
+            navigate("/marketplace");
+            return;
+        }
         const decodedToken = jwtDecode<DecodedToken>(token!);
-        if (!decodedToken.id || decodedToken.role !== Role.Admin) navigate("/marketplace");
+        if (!decodedToken.id || decodedToken.role !== Role.Admin) {
+            navigate("/marketplace");
+            return;
+        }
         fetchPackages();
     }, [fetchPackages, navigate]);
 
@@ -104,7 +110,7 @@ const ReviewPackages: React.FC = () => {
                                     className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg shadow-md p-4 hover:shadow-lg transition-transform transform"
                                 >
                                     <img
-                                        src={pkg.thumbnail || "https://salescode.ai/wp-content/uploads/2023/04/Square-Teal-.png"}
+                                        src={(pkg.thumbnail && pkg.thumbnail !== "") ? pkg.thumbnail : "https://salescode.ai/wp-content/uploads/2023/04/Square-Teal-.png"}
                                         alt={pkg.packageName}
                                         className="w-full h-40 object-cover rounded-md mb-4"
                                     />
