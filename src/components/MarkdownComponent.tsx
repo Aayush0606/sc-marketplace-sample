@@ -12,7 +12,7 @@ interface CodeProps {
 
 function MarkdownComponent({ markdown }: { markdown: string }) {
   return (
-    <div className="dark:text-gray-100 text-gray-900 dark:prose-invert">
+    <div className="dark:text-gray-100 text-gray-900 dark:prose-invert overflow-auto">
       <ReactMarkdown
         className="markdown"
         remarkPlugins={[remarkGfm]}

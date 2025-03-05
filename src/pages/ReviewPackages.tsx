@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import network_service from "../utils/network_service";
-import { CHANGE_PACKAGE_STATUS, PACKAGE_URL } from "../constants/api_constants";
+import { CHANGE_PACKAGE_STATUS, DEFAULT_THUMBNAIL_URL, PACKAGE_URL } from "../constants/api_constants";
 import Modal from "react-modal";
 import { jwtDecode } from "jwt-decode";
 import { DecodedToken } from "../store/slices/authSlice";
@@ -110,9 +110,9 @@ const ReviewPackages: React.FC = () => {
                                     className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg shadow-md p-4 hover:shadow-lg transition-transform transform"
                                 >
                                     <img
-                                        src={(pkg.thumbnail && pkg.thumbnail !== "") ? pkg.thumbnail : "https://salescode.ai/wp-content/uploads/2023/04/Square-Teal-.png"}
+                                        src={(pkg.thumbnail && pkg.thumbnail !== "") ? pkg.thumbnail : DEFAULT_THUMBNAIL_URL}
                                         alt={pkg.packageName}
-                                        className="w-full h-40 object-cover rounded-md mb-4"
+                                        className="w-full h-40 object-fill rounded-md mb-4"
                                     />
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                                         {pkg.packageName}

@@ -215,7 +215,7 @@ const EditMoral: React.FC<ModalComponentProps> = ({
                       <img
                         src={imageList[0]["data_url"]}
                         alt="Uploaded"
-                        className="w-full h-full object-contain rounded-lg"
+                        className="w-full h-full object-fill rounded-lg"
                       />
                       <button
                         type="button"

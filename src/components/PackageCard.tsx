@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleStar } from '../store/slices/packagesSlice';
 import { RootState } from '../store/store';
 import { useNavigate } from 'react-router-dom';
+import { DEFAULT_THUMBNAIL_URL } from '../constants/api_constants';
 
 interface PackageCardProps {
   package: Package;
@@ -26,9 +27,9 @@ export const PackageCard: React.FC<PackageCardProps> = ({ package: pkg }) => {
       className="bg-white hover:cursor-pointer dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all hover:shadow-lg"
     >
       <img
-        src={(pkg.thumbnail && pkg.thumbnail!="")?pkg.thumbnail:"https://salescode.ai/wp-content/uploads/2023/04/Square-Teal-.png"}
+        src={(pkg.thumbnail && pkg.thumbnail!="")?pkg.thumbnail:DEFAULT_THUMBNAIL_URL}
         alt={pkg.packageName}
-        className="w-full h-48 object-cover"
+        className="w-full h-48 object-fill"
       />
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
